@@ -1,60 +1,105 @@
-import { StyleSheet, Text, SafeAreaView, StatusBar, TouchableWithoutFeedback, Keyboard } from 'react-native';
-import Header from './components/Header'
-import StartGameScreen from './screens/StartGameScreen';
-import GameScreen from "./screens/GameScreen";
+import { 
+    StyleSheet, 
+    Text, 
+    SafeAreaView, 
+    StatusBar, 
+    TouchableWithoutFeedback, 
+    Keyboard, 
+    View 
+} 
+from 'react-native';
 import { useState } from 'react';
-import Gameoverscreen from './screens/GameOverScreen';
+import Background from './constants/imageBackground';
+import Card from './components/Card';
+import Button from './components/button';
+
+const arrayShuffle = (o) => {
+    for(let j, x, i = o.length; 
+        i; 
+        j = parseInt(Math.random() * i),
+        x = o[--i],
+        o[i] = o[j],
+        o[j] = x);
+        return o;
+}
+
 
 export default function App() {
 
-  // User number is the input number that the user has typed
-  const [userNumber, setUserNumber] = useState();
+    const buttons = [];
 
-  // This sets the number of rounds the computer took to get to this point
-  const [rounds, setRounds] = useState(0);
+    for (let index = 1; index < 10; index++) {
+        buttons.push(<Button style={styles.buttonSize} >    { index }   </Button>);
+        
+    }
+    buttons.push(
+        <Button style={styles.buttonSize}>
+            0
+        </Button>
+    );
 
-  // This function starts the game
-  const startGameHandler = selectedNumber => {
-    setUserNumber(selectedNumber);
-    setRounds(0);
-  }
+    let shuf;
 
-  // Configure a new game
-  const configureNewGame = () => {
-    setRounds(0);
-    setUserNumber(null);
-  }
+    shuf = arrayShuffle(buttons);
 
-  // This function sets the number of rounds or times it took the computer to guess the accurate number
-  const gameOverHandler = numOfRounds => {
-    setRounds(numOfRounds);
-  }
 
-  // This is sets the default screen for the game and passes the start game function to the screen
-  let content = <StartGameScreen onStartGame={startGameHandler}></StartGameScreen>;
 
-  // This sets the game screen that to shows the game has started and passes the number the user has typed or chosen
-  if (userNumber && rounds <= 0) {
-    content = <GameScreen userChoice={userNumber} onGameOver={gameOverHandler}></GameScreen>;
-  }
-  else if (rounds > 0) {
-    content = <Gameoverscreen rounds={rounds} userNumber={userNumber} newGame={configureNewGame}></Gameoverscreen>;
-  }
+    return ( 
+        <TouchableWithoutFeedback 
+      onPress = {() => Keyboard.dismiss() }
+      >
+            
+            <SafeAreaView style = { styles.container } >
+                <Background>
+                    <View style={styles.topContainer}>
+                        <Card style={styles.topScreen}>
+                            <Text>
+                                Top Screen
+                            </Text>
+                        </Card>
+                    </View>
+                    {/* <Card style={styles.cardContain}> */}
+                    <View style={styles.cardContain}>
+                        { 
+                         shuf
+                        }
+                    </View>
+                </Background>
+            </SafeAreaView>
 
-  return (
-    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()} >
-      <SafeAreaView style={styles.container}>
-        <Header title='Computer Guessing Game'></Header>
-        {content}
-      </SafeAreaView>
-    </TouchableWithoutFeedback>
-  );
+        </TouchableWithoutFeedback>
+    );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
-  },
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+        paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+    },
+    cardContain: {
+        width: '100%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexWrap: 'wrap',
+        // backgroundColor: 'orange',
+        flex: 1
+    },
+    buttonSize: {
+        width: 100,
+        margin: 7,
+    },
+    topContainer: {
+        flex: 1,
+        // backgroundColor: 'red',
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    topScreen: {
+        width: 350,
+        height: 200,
+        alignItems: 'center',
+        justifyContent: 'center'
+    }
 });
